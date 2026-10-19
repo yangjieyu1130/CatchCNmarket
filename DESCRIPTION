@@ -1,0 +1,31 @@
+Package: cnmarket
+Type: Package
+Title: A-Share Market Regime-Aware Market Data Toolkit
+Version: 0.1.0
+Authors@R: 
+    person("cnmarket", "Authors", email = "cnmarket@example.com", role = c("aut", "cre"))
+Description: A lightweight toolkit for A-share (Mainland China) market data built
+    on the Tushare API. Unlike general-purpose market-data packages, it is aware
+    of the A-share trading regime: it derives daily price limits from the board
+    (Main Board 10 percent, STAR Market and ChiNext 20 percent, Beijing Stock
+    Exchange 30 percent) and ST status (5 percent), tags limit-up, limit-down and
+    trading-halt (suspension) days, computes the T+1 sellable date, and supports
+    forward and backward price adjustment (qfq/hfq) from adjustment factors.
+    Every request is cached on disk for offline reuse and rate-limit friendliness.
+License: MIT + file LICENSE
+URL: https://github.com/yangjieyu1130/CatchCNmarket
+BugReports: https://github.com/yangjieyu1130/CatchCNmarket/issues
+Encoding: UTF-8
+Depends:
+    R (>= 4.1)
+Imports:
+    httr2,
+    jsonlite,
+    tibble,
+    tools,
+    utils,
+    stats
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
