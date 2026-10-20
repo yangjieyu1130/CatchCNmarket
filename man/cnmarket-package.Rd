@@ -20,6 +20,14 @@ The two layers are deliberately separated:
 * **regime layer** -- `cn_board()`, `cn_limit_pct()`, `cn_limit_rule()` and
   `cn_flag()` turn that data into A-share-regime-aware features.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/yangjieyu1130/CatchCNmarket}
+  \item Report bugs at \url{https://github.com/yangjieyu1130/CatchCNmarket/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: cnmarket Authors \email{cnmarket@example.com}
 

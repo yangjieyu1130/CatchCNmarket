@@ -1,7 +1,7 @@
 Package: cnmarket
 Type: Package
 Title: A-Share Market Regime-Aware Market Data Toolkit
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person("cnmarket", "Authors", email = "cnmarket@example.com", role = c("aut", "cre"))
 Description: A lightweight toolkit for A-share (Mainland China) market data built
@@ -21,10 +21,10 @@ Depends:
 Imports:
     httr2,
     jsonlite,
+    stats,
     tibble,
     tools,
-    utils,
-    stats
+    utils
 Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

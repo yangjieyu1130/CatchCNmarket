@@ -62,6 +62,24 @@ cn_limit_rule("600519.SH", is_st = TRUE) # 主板 ST → 5%
 **数据层**：`cn_daily()`、`cn_stock_basic()`、`cn_trade_cal()`
 **配置层**：`cn_set_token()`、`cn_set_cache_dir()`、`cn_use_cache()`、`cn_cache_clear()`
 **制度层**：`cn_board()`、`cn_limit_pct()`、`cn_limit_rule()`、`cn_flag()`
+**预测层**：`cn_arima()`
+
+## 初级行情预测（非季节性 ARIMA）
+
+```r
+fc <- cn_arima("000001.SZ", n_ahead = 5)   # order = "auto" 按 AIC 网格搜索 (p,d,q ∈ 0..2)
+fc
+#>   h trade_date forecast lo80 hi80 lo95 hi95
+#>   1 20261021      11.4 11.3 11.6 11.2 11.7
+#>   ...（未来交易日自动跳过周末/节假日）
+attr(fc, "order")                           # 自动选出的 (p, d, q)
+```
+
+- 输入灵活：直接给 `ts_code`（自动拉近一年日线）、给 `cn_daily()` 的数据框、或给数值向量
+- 默认对**对数价格**建模再指数回变换，保证预测值非负、方差更稳
+- 未来 `trade_date` 联动交易日历；离线时日期为 `NA`，`h` 列仍标记预测步数
+- 可显式指定 `order = c(p, d, q)`，区间置信度用 `level` 调整
+- 定位是**单变量统计基线**（无季节性、无外生变量、无机制切换），不构成投资建议
 
 ## 缓存
 
