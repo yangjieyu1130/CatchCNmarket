@@ -86,15 +86,22 @@ cn_future_dates <- function(last_date, n_ahead, refresh = FALSE) {
 #' @export
 cn_arima <- function(x, order = "auto", n_ahead = 5, log_price = TRUE,
                      level = c(80, 95), refresh = FALSE) {
-  s <- cn_arima_series(x, refresh = refresh)
-  y0 <- s$y[!is.na(s$y)]
-  if (length(y0) < 10L) stop("序列太短，至少需要 10 个观测。", call. = FALSE)
-  if (length(unique(y0)) < 2L) stop("序列为常数，无法拟合 ARIMA。", call. = FALSE)
+  # Validate inputs before any network call.
   n_ahead <- as.integer(n_ahead)[1]
   if (is.na(n_ahead) || n_ahead < 1L) stop("n_ahead 必须是正整数。", call. = FALSE)
   level <- sort(unique(as.numeric(level)))
   if (any(level <= 0 | level >= 100)) stop("level 必须在 (0, 100) 内。", call. = FALSE)
+  if (!identical(order, "auto")) {
+    o <- as.integer(order)
+    if (length(o) != 3L || any(is.na(o)) || any(o < 0L)) {
+      stop("order 必须是 \"auto\" 或非负整数向量 c(p, d, q)。", call. = FALSE)
+    }
+  }
 
+  s <- cn_arima_series(x, refresh = refresh)
+  y0 <- s$y[!is.na(s$y)]
+  if (length(y0) < 10L) stop("序列太短，至少需要 10 个观测。", call. = FALSE)
+  if (length(unique(y0)) < 2L) stop("序列为常数，无法拟合 ARIMA。", call. = FALSE)
   if (log_price) {
     if (any(y0 <= 0)) stop("log_price = TRUE 要求价格全为正数。", call. = FALSE)
     y <- log(y0)
@@ -105,11 +112,7 @@ cn_arima <- function(x, order = "auto", n_ahead = 5, log_price = TRUE,
   ord <- if (identical(order, "auto")) {
     cn_arima_auto(y)
   } else {
-    o <- as.integer(order)
-    if (length(o) != 3L || any(is.na(o)) || any(o < 0L)) {
-      stop("order 必须是 \"auto\" 或非负整数向量 c(p, d, q)。", call. = FALSE)
-    }
-    o
+    as.integer(order)
   }
   fit <- stats::arima(y, order = ord)
   pr <- stats::predict(fit, n.ahead = n_ahead, se.fit = TRUE)

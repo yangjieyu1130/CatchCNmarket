@@ -1,7 +1,7 @@
 Package: cnmarket
 Type: Package
 Title: A-Share Market Regime-Aware Market Data Toolkit
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person("cnmarket", "Authors", email = "cnmarket@example.com", role = c("aut", "cre"))
 Description: A lightweight toolkit for A-share (Mainland China) market data built
@@ -11,7 +11,11 @@ Description: A lightweight toolkit for A-share (Mainland China) market data buil
     Exchange 30 percent) and ST status (5 percent), tags limit-up, limit-down and
     trading-halt (suspension) days, computes the T+1 sellable date, and supports
     forward and backward price adjustment (qfq/hfq) from adjustment factors.
-    Every request is cached on disk for offline reuse and rate-limit friendliness.
+    It also provides a non-seasonal ARIMA forecaster and an institutional-aware
+    multi-factor screener that filters by board / limit / streak / T+1 risk in
+    addition to standard technical factors (MA, ATR, volume ratio, volatility),
+    with an optional forecast-ahead pass. Every request is cached on disk for
+    offline reuse and rate-limit friendliness.
 License: MIT + file LICENSE
 URL: https://github.com/yangjieyu1130/CatchCNmarket
 BugReports: https://github.com/yangjieyu1130/CatchCNmarket/issues
@@ -20,11 +24,9 @@ Depends:
     R (>= 4.1)
 Imports:
     httr2,
-    jsonlite,
     stats,
     tibble,
-    tools,
-    utils
+    tools
 Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
