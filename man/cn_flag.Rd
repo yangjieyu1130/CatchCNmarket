@@ -45,8 +45,7 @@ market-data packages do not provide:
   0.01), i.e. `pre_close * (1 +/- limit_pct)`.
 * `is_limit_up` / `is_limit_down` -- whether the close reached the limit.
 * `is_suspended` -- trading halt (missing or zero volume).
-* `up_streak` / `down_streak` -- consecutive limit-up / limit-down counts
-  (the "连板" statistic).
+* `up_streak` / `down_streak` -- consecutive limit-up / limit-down counts.
 * `sellable_date` -- the T+1 date on which a position bought that day can be
   sold (the next open trading date).
 

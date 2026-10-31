@@ -3,18 +3,21 @@ Type: Package
 Title: A-Share Market Regime-Aware Market Data Toolkit
 Version: 0.3.0
 Authors@R: 
-    person("cnmarket", "Authors", email = "cnmarket@example.com", role = c("aut", "cre"))
-Description: A lightweight toolkit for A-share (Mainland China) market data built
-    on the Tushare API. Unlike general-purpose market-data packages, it is aware
-    of the A-share trading regime: it derives daily price limits from the board
-    (Main Board 10 percent, STAR Market and ChiNext 20 percent, Beijing Stock
-    Exchange 30 percent) and ST status (5 percent), tags limit-up, limit-down and
-    trading-halt (suspension) days, computes the T+1 sellable date, and supports
-    forward and backward price adjustment (qfq/hfq) from adjustment factors.
-    It also provides a non-seasonal ARIMA forecaster and an institutional-aware
-    multi-factor screener that filters by board / limit / streak / T+1 risk in
-    addition to standard technical factors (MA, ATR, volume ratio, volatility),
-    with an optional forecast-ahead pass. Every request is cached on disk for
+    person("Jieyu", "Yang", email = "yangjieyu1130@gmail.com",
+           role = c("aut", "cre"))
+Description: A lightweight toolkit for A-share (Mainland China) market data
+    built on the 'Tushare' API. Unlike general-purpose market-data packages,
+    it is aware of the A-share trading regime: it derives daily price limits
+    from the board (Main Board 10 percent, STAR Market and 'ChiNext' 20
+    percent, Beijing Stock Exchange 30 percent) and ST status (5 percent),
+    tags limit-up, limit-down and trading-halt (suspension) days, computes
+    the next date a position can be sold under the T+1 rule, and supports
+    forward and backward price adjustment ('qfq' / 'hfq') from adjustment
+    factors. It also provides a non-seasonal ARIMA forecaster and an
+    institution-aware multi-factor screening tool that filters by board,
+    limit, streak and T+1 risk in addition to standard technical factors
+    (moving averages, average true range, volume ratio, volatility), with
+    an optional forecast-ahead pass. Every request is cached on disk for
     offline reuse and rate-limit friendliness.
 License: MIT + file LICENSE
 URL: https://github.com/yangjieyu1130/CatchCNmarket

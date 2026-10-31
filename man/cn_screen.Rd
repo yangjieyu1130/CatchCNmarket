@@ -20,8 +20,8 @@ cn_screen(
 
 \item{filters}{Named list of filter expressions. Each value must be either
 `c(min, max)` for a numeric range (open ends allowed, e.g. `c(0.10, Inf)`),
-or a value / vector for exact / membership match (e.g. `board =
-c("创业板", "科创板")`).}
+or a value / vector for exact / membership match (e.g. a vector of board
+labels from [cn_board()]).}
 
 \item{n_lookback}{Trading-day history per stock (default 60).}
 
@@ -59,22 +59,23 @@ on the survivors.
 }
 \examples{
 \dontrun{
-# 弹性板 + 非 ST + 量能放大 + 近 20 日涨幅温和
+# ChiNext/STAR boards, non-ST, volume expansion, moderate 20-day gain
+boards20 <- vapply(c("300750.SZ", "688981.SH"), cn_board, character(1))
 res <- cn_screen(
   universe = c("600519.SH", "300750.SZ", "601318.SH", "000001.SZ"),
   filters = list(
-    board          = c("创业板", "科创板"),
+    board          = boards20,
     is_st          = FALSE,
     pct_chg_20d    = c(-0.05, 0.30),
     vol_ratio_5_20 = c(1.2, 5)
   )
 )
 
-# 接力板（2-4 连板，创业板弹性）+ 预测上行
+# Relay boards (2-4 consecutive limit-ups, ChiNext/STAR) + forecast up
 res <- cn_screen(
   universe = "all",
   filters = list(
-    board       = c("创业板", "科创板"),
+    board       = boards20,
     is_st       = FALSE,
     up_streak   = c(2, 4),
     halt_count_10d = c(0, 0),

@@ -14,7 +14,7 @@
 #' @export
 cn_set_token <- function(token) {
   if (!is.character(token) || length(token) != 1L || !nzchar(token)) {
-    stop("token 必须是非空字符串。", call. = FALSE)
+    stop("token \u5fc5\u987b\u662f\u975e\u7a7a\u5b57\u7b26\u4e32\u3002", call. = FALSE)
   }
   options(cnmarket.token = token)
   invisible(token)
@@ -29,8 +29,8 @@ cn_token <- function() {
   }
   if (!nzchar(tok)) {
     stop(
-      "未配置 Tushare token。请用 cn_set_token(\"<你的token>\") 设置，",
-      "或设置环境变量 TUSHARE_TOKEN。",
+      "\u672a\u914d\u7f6e Tushare token\u3002\u8bf7\u7528 cn_set_token(\"<\u4f60\u7684token>\") \u8bbe\u7f6e\uff0c",
+      "\u6216\u8bbe\u7f6e\u73af\u5883\u53d8\u91cf TUSHARE_TOKEN\u3002",
       call. = FALSE
     )
   }

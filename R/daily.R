@@ -78,7 +78,7 @@ cn_daily <- function(ts_code, start_date = NULL, end_date = NULL,
                      adjust = c("none", "qfq", "hfq"), refresh = FALSE) {
   adjust <- match.arg(adjust)
   if (!is.character(ts_code) || length(ts_code) != 1L) {
-    stop("ts_code 必须是单个证券代码字符串。", call. = FALSE)
+    stop("ts_code \u5fc5\u987b\u662f\u5355\u4e2a\u8bc1\u5238\u4ee3\u7801\u5b57\u7b26\u4e32\u3002", call. = FALSE)
   }
   end_date <- cn_ymd(if (is.null(end_date)) Sys.Date() else end_date)
   if (is.null(start_date)) {
@@ -86,11 +86,11 @@ cn_daily <- function(ts_code, start_date = NULL, end_date = NULL,
   } else {
     start_date <- cn_ymd(start_date)
   }
-  if (start_date > end_date) stop("start_date 必须不晚于 end_date。", call. = FALSE)
+  if (start_date > end_date) stop("start_date \u5fc5\u987b\u4e0d\u665a\u4e8e end_date\u3002", call. = FALSE)
 
   bars <- cn_daily_raw(ts_code, start_date, end_date, refresh = refresh)
   if (is.null(bars)) {
-    stop(sprintf("未取到 %s 在 %s ~ %s 的行情数据。", ts_code, start_date, end_date),
+    stop(sprintf("\u672a\u53d6\u5230 %s \u5728 %s ~ %s \u7684\u884c\u60c5\u6570\u636e\u3002", ts_code, start_date, end_date),
          call. = FALSE)
   }
   bars <- bars[!duplicated(bars$trade_date), , drop = FALSE]
@@ -102,7 +102,7 @@ cn_daily <- function(ts_code, start_date = NULL, end_date = NULL,
 
   adj <- cn_adj_factor(ts_code, start_date, end_date, refresh = refresh)
   if (is.null(adj)) {
-    warning("未取到 adj_factor，返回未复权数据。", call. = FALSE)
+    warning("\u672a\u53d6\u5230 adj_factor\uff0c\u8fd4\u56de\u672a\u590d\u6743\u6570\u636e\u3002", call. = FALSE)
     attr(bars, "adjust") <- "none"
     return(tibble::as_tibble(bars))
   }

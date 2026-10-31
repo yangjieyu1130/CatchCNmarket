@@ -15,7 +15,7 @@ cn_screen_live(
 \arguments{
 \item{universe}{`"all"` or a `ts_code` vector.}
 
-\item{streak_range}{Integer band, default `2:4` (2..4 连板).}
+\item{streak_range}{Integer band, default `2:4` (2..4 consecutive limit-ups).}
 
 \item{refresh}{Bypass caches.}
 

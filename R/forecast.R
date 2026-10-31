@@ -14,7 +14,7 @@ cn_arima_series <- function(x, refresh = FALSE) {
   } else if (is.numeric(x) && is.null(dim(x))) {
     list(y = as.numeric(x), last_date = NULL, ts_code = NA_character_)
   } else {
-    stop("x 必须是 ts_code 字符串、含 close 列的数据框或数值向量。", call. = FALSE)
+    stop("x \u5fc5\u987b\u662f ts_code \u5b57\u7b26\u4e32\u3001\u542b close \u5217\u7684\u6570\u636e\u6846\u6216\u6570\u503c\u5411\u91cf\u3002", call. = FALSE)
   }
 }
 
@@ -33,7 +33,7 @@ cn_arima_auto <- function(y, max_order = 2L) {
   })
   fits <- Filter(Negate(is.null), fits)
   if (length(fits) == 0L) {
-    stop("auto 阶数搜索全部失败，请改用显式 order = c(p, d, q)。", call. = FALSE)
+    stop("auto \u9636\u6570\u641c\u7d22\u5168\u90e8\u5931\u8d25\uff0c\u8bf7\u6539\u7528\u663e\u5f0f order = c(p, d, q)\u3002", call. = FALSE)
   }
   fits[[which.min(vapply(fits, function(f) f$aic, numeric(1)))]]$order
 }
@@ -88,22 +88,22 @@ cn_arima <- function(x, order = "auto", n_ahead = 5, log_price = TRUE,
                      level = c(80, 95), refresh = FALSE) {
   # Validate inputs before any network call.
   n_ahead <- as.integer(n_ahead)[1]
-  if (is.na(n_ahead) || n_ahead < 1L) stop("n_ahead 必须是正整数。", call. = FALSE)
+  if (is.na(n_ahead) || n_ahead < 1L) stop("n_ahead \u5fc5\u987b\u662f\u6b63\u6574\u6570\u3002", call. = FALSE)
   level <- sort(unique(as.numeric(level)))
-  if (any(level <= 0 | level >= 100)) stop("level 必须在 (0, 100) 内。", call. = FALSE)
+  if (any(level <= 0 | level >= 100)) stop("level \u5fc5\u987b\u5728 (0, 100) \u5185\u3002", call. = FALSE)
   if (!identical(order, "auto")) {
     o <- as.integer(order)
     if (length(o) != 3L || any(is.na(o)) || any(o < 0L)) {
-      stop("order 必须是 \"auto\" 或非负整数向量 c(p, d, q)。", call. = FALSE)
+      stop("order \u5fc5\u987b\u662f \"auto\" \u6216\u975e\u8d1f\u6574\u6570\u5411\u91cf c(p, d, q)\u3002", call. = FALSE)
     }
   }
 
   s <- cn_arima_series(x, refresh = refresh)
   y0 <- s$y[!is.na(s$y)]
-  if (length(y0) < 10L) stop("序列太短，至少需要 10 个观测。", call. = FALSE)
-  if (length(unique(y0)) < 2L) stop("序列为常数，无法拟合 ARIMA。", call. = FALSE)
+  if (length(y0) < 10L) stop("\u5e8f\u5217\u592a\u77ed\uff0c\u81f3\u5c11\u9700\u8981 10 \u4e2a\u89c2\u6d4b\u3002", call. = FALSE)
+  if (length(unique(y0)) < 2L) stop("\u5e8f\u5217\u4e3a\u5e38\u6570\uff0c\u65e0\u6cd5\u62df\u5408 ARIMA\u3002", call. = FALSE)
   if (log_price) {
-    if (any(y0 <= 0)) stop("log_price = TRUE 要求价格全为正数。", call. = FALSE)
+    if (any(y0 <= 0)) stop("log_price = TRUE \u8981\u6c42\u4ef7\u683c\u5168\u4e3a\u6b63\u6570\u3002", call. = FALSE)
     y <- log(y0)
   } else {
     y <- y0
@@ -122,7 +122,7 @@ cn_arima <- function(x, order = "auto", n_ahead = 5, log_price = TRUE,
   out <- tibble::tibble(h = seq_len(n_ahead))
   dates <- cn_future_dates(s$last_date, n_ahead, refresh = refresh)
   if (is.null(dates) || length(dates) < n_ahead) {
-    warning("交易日历不可用，trade_date 以 NA 占位（h 列仍为预测步数）。", call. = FALSE)
+    warning("\u4ea4\u6613\u65e5\u5386\u4e0d\u53ef\u7528\uff0ctrade_date \u4ee5 NA \u5360\u4f4d\uff08h \u5217\u4ecd\u4e3a\u9884\u6d4b\u6b65\u6570\uff09\u3002", call. = FALSE)
     dates <- c(dates, rep(NA_character_, n_ahead - length(dates)))
   }
   out$trade_date <- dates

@@ -2,7 +2,7 @@
 # and for any window that contains an NA.
 roll_ma <- function(x, n) {
   n <- as.integer(n)[1]
-  if (n < 1L) stop("n 必须 >= 1", call. = FALSE)
+  if (n < 1L) stop("n \u5fc5\u987b >= 1", call. = FALSE)
   x <- as.numeric(x)
   k <- length(x)
   out <- rep(NA_real_, k)

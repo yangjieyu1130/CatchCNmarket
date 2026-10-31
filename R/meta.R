@@ -8,9 +8,9 @@
 #' @param refresh Force a fresh API call, bypassing the cache.
 #' @return A tibble with columns `ts_code`, `symbol`, `name`, `area`, `industry`,
 #'   `market`, `exchange`, `list_status`, `list_date`, `delist_date`, `is_hs`.
-#'   `market` carries the board (主板/创业板/科创板/北交所) used by
-#'   [cn_board()]; `name` keeps the current trading name (an `ST`/`*ST` prefix
-#'   indicates a special-treatment stock).
+#'   `market` carries the board label (see [cn_board()]); `name` keeps the
+#'   current trading name (an `ST`/`*ST` prefix indicates a
+#'   special-treatment stock).
 #' @examples
 #' \dontrun{
 #' basic <- cn_stock_basic(c("600519.SH", "300750.SZ"))

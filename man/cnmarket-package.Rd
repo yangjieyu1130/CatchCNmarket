@@ -29,11 +29,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: cnmarket Authors \email{cnmarket@example.com}
+\strong{Maintainer}: Jieyu Yang \email{yangjieyu1130@gmail.com}
 
 Authors:
 \itemize{
-  \item cnmarket Authors \email{cnmarket@example.com}
+  \item Jieyu Yang \email{yangjieyu1130@gmail.com}
 }
 
 }

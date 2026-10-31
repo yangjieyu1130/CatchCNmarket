@@ -10,7 +10,7 @@
 #' @keywords internal
 cn_universe <- function(universe, refresh = FALSE) {
   if (is.data.frame(universe)) {
-    if (!"ts_code" %in% names(universe)) stop("universe 数据框缺少 ts_code 列。", call. = FALSE)
+    if (!"ts_code" %in% names(universe)) stop("universe \u6570\u636e\u6846\u7f3a\u5c11 ts_code \u5217\u3002", call. = FALSE)
     return(tibble::as_tibble(universe))
   }
   if (is.character(universe) && length(universe) == 1L && universe == "all") {
@@ -19,10 +19,10 @@ cn_universe <- function(universe, refresh = FALSE) {
   if (is.character(universe)) {
     basic <- cn_stock_basic(universe, refresh = refresh)
     missing <- setdiff(universe, basic$ts_code)
-    if (length(missing)) warning("以下代码在 stock_basic 中不存在：", paste(missing, collapse = ", "), call. = FALSE)
+    if (length(missing)) warning("\u4ee5\u4e0b\u4ee3\u7801\u5728 stock_basic \u4e2d\u4e0d\u5b58\u5728\uff1a", paste(missing, collapse = ", "), call. = FALSE)
     return(basic)
   }
-  stop("universe 须为 \"all\"、ts_code 向量或 stock_basic 结果。", call. = FALSE)
+  stop("universe \u987b\u4e3a \"all\"\u3001ts_code \u5411\u91cf\u6216 stock_basic \u7ed3\u679c\u3002", call. = FALSE)
 }
 
 # Map a filter expression to a match test. Accepts:
@@ -154,8 +154,8 @@ cn_arima_feature_row <- function(ts_code, feat_row, horizon = 3L, refresh = FALS
 #'   [cn_stock_basic()].
 #' @param filters Named list of filter expressions. Each value must be either
 #'   `c(min, max)` for a numeric range (open ends allowed, e.g. `c(0.10, Inf)`),
-#'   or a value / vector for exact / membership match (e.g. `board =
-#'   c("创业板", "科创板")`).
+#'   or a value / vector for exact / membership match (e.g. a vector of board
+#'   labels from [cn_board()]).
 #' @param n_lookback Trading-day history per stock (default 60).
 #' @param run_arima If `TRUE`, append ARIMA forecast features and allow
 #'   filtering on `arima_pred_chg`. Only runs on stocks that pass the
@@ -167,22 +167,23 @@ cn_arima_feature_row <- function(ts_code, feat_row, horizon = 3L, refresh = FALS
 #'   (including `score` when `run_arima = TRUE`, simple z-score weighted sum).
 #' @examples
 #' \dontrun{
-#' # 弹性板 + 非 ST + 量能放大 + 近 20 日涨幅温和
+#' # ChiNext/STAR boards, non-ST, volume expansion, moderate 20-day gain
+#' boards20 <- vapply(c("300750.SZ", "688981.SH"), cn_board, character(1))
 #' res <- cn_screen(
 #'   universe = c("600519.SH", "300750.SZ", "601318.SH", "000001.SZ"),
 #'   filters = list(
-#'     board          = c("创业板", "科创板"),
+#'     board          = boards20,
 #'     is_st          = FALSE,
 #'     pct_chg_20d    = c(-0.05, 0.30),
 #'     vol_ratio_5_20 = c(1.2, 5)
 #'   )
 #' )
 #'
-#' # 接力板（2-4 连板，创业板弹性）+ 预测上行
+#' # Relay boards (2-4 consecutive limit-ups, ChiNext/STAR) + forecast up
 #' res <- cn_screen(
 #'   universe = "all",
 #'   filters = list(
-#'     board       = c("创业板", "科创板"),
+#'     board       = boards20,
 #'     is_st       = FALSE,
 #'     up_streak   = c(2, 4),
 #'     halt_count_10d = c(0, 0),
@@ -199,10 +200,10 @@ cn_screen <- function(universe = "all", filters = list(),
   # Validate inputs BEFORE any network calls. Universe first so obvious
   # misuse is caught even when filters is empty.
   if (!is.character(universe) && !is.data.frame(universe)) {
-    stop("universe 须为 \"all\"、ts_code 向量或 stock_basic 结果。", call. = FALSE)
+    stop("universe \u987b\u4e3a \"all\"\u3001ts_code \u5411\u91cf\u6216 stock_basic \u7ed3\u679c\u3002", call. = FALSE)
   }
   nms <- names(filters)
-  if (is.null(nms) || !nzchar(nms[1])) stop("filters 须为命名列表。", call. = FALSE)
+  if (is.null(nms) || !nzchar(nms[1])) stop("filters \u987b\u4e3a\u547d\u540d\u5217\u8868\u3002", call. = FALSE)
 
   cand <- cn_universe(universe, refresh = refresh)
   codes <- cand$ts_code
@@ -212,7 +213,7 @@ cn_screen <- function(universe = "all", filters = list(),
     character(0)
   }
 
-  if (length(codes) == 0L) stop("候选池为空。", call. = FALSE)
+  if (length(codes) == 0L) stop("\u5019\u9009\u6c60\u4e3a\u7a7a\u3002", call. = FALSE)
 
   pre_arima_nms <- c(
     "board", "is_st", "limit_pct", "up_streak", "down_streak",
@@ -221,7 +222,7 @@ cn_screen <- function(universe = "all", filters = list(),
     "vol_ratio_5_20", "atr_pct", "close_vs_ma20", "vol_20d"
   )
 
-  if (progress) cat("收集特征中... 共", length(codes), "只\n")
+  if (progress) cat("\u6536\u96c6\u7279\u5f81\u4e2d... \u5171", length(codes), "\u53ea\n")
   feats <- vector("list", length(codes))
   for (i in seq_along(codes)) {
     if (progress && i %% 20 == 0) cat("  ", i, "/", length(codes), "\n")
@@ -233,7 +234,7 @@ cn_screen <- function(universe = "all", filters = list(),
     )
   }
   feats <- Filter(Negate(is.null), feats)
-  if (length(feats) == 0L) stop("所有候选标的取数失败。", call. = FALSE)
+  if (length(feats) == 0L) stop("\u6240\u6709\u5019\u9009\u6807\u7684\u53d6\u6570\u5931\u8d25\u3002", call. = FALSE)
   df <- do.call(rbind, feats)
   df$name <- ifelse(df$ts_code %in% names(name_map),
                     name_map[df$ts_code], NA_character_)
@@ -251,7 +252,7 @@ cn_screen <- function(universe = "all", filters = list(),
   # ARIMA pass only if requested AND the filter needs it.
   want_arima_filters <- any(grepl("arima_pred_chg", nms))
   if (run_arima || want_arima_filters) {
-    if (progress) cat("ARIMA 预测中... 共", nrow(df), "只\n")
+    if (progress) cat("ARIMA \u9884\u6d4b\u4e2d... \u5171", nrow(df), "\u53ea\n")
     ar_rows <- vector("list", nrow(df))
     for (i in seq_len(nrow(df))) {
       if (progress && i %% 10 == 0) cat("  ", i, "/", nrow(df), "\n")
@@ -290,7 +291,7 @@ cn_screen <- function(universe = "all", filters = list(),
 #' no recent halts, no consecutive down-limits, and ARIMA forecast >= 0.
 #'
 #' @param universe `"all"` or a `ts_code` vector.
-#' @param streak_range Integer band, default `2:4` (2..4 连板).
+#' @param streak_range Integer band, default `2:4` (2..4 consecutive limit-ups).
 #' @param refresh Bypass caches.
 #' @param progress Print progress ticks (default `TRUE`).
 #' @param ... Additional filter expressions forwarded to [cn_screen()].
@@ -305,7 +306,7 @@ cn_screen_live <- function(universe = "all", streak_range = 2L:4L,
                            refresh = FALSE, progress = TRUE, ...) {
   filters <- c(
     list(
-      board           = c("创业板", "科创板"),
+      board           = c("\u521b\u4e1a\u677f", "\u79d1\u521b\u677f"),
       is_st           = FALSE,
       up_streak       = c(min(streak_range), max(streak_range)),
       down_streak     = c(0, 0),

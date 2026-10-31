@@ -12,7 +12,7 @@ cn_ymd <- function(x) {
   if (is.numeric(x)) x <- format(x, scientific = FALSE)
   x <- gsub("[^0-9]", "", as.character(x))
   if (!nzchar(x) || nchar(x) != 8L) {
-    stop("日期应为 YYYYMMDD / YYYY-MM-DD 或 Date 对象。", call. = FALSE)
+    stop("\u65e5\u671f\u5e94\u4e3a YYYYMMDD / YYYY-MM-DD \u6216 Date \u5bf9\u8c61\u3002", call. = FALSE)
   }
   x
 }

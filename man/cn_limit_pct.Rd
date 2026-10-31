@@ -4,10 +4,11 @@
 \alias{cn_limit_pct}
 \title{Daily price-limit percentage for a security}
 \usage{
-cn_limit_pct(board = "主板", is_st = FALSE, days_since_list = Inf)
+cn_limit_pct(board = NULL, is_st = FALSE, days_since_list = Inf)
 }
 \arguments{
-\item{board}{Board label from [cn_board()].}
+\item{board}{Board label from [cn_board()]; `NULL` (default) means the
+Main Board.}
 
 \item{is_st}{Logical; `TRUE` for ST / *ST stocks (only affects the Main Board).}
 
@@ -25,7 +26,7 @@ first five trading days of listing (registration-based IPO) are exempt and
 return `NA_real_` (no limit).
 }
 \examples{
-cn_limit_pct("主板")            # 0.10
-cn_limit_pct("主板", is_st = TRUE)  # 0.05
-cn_limit_pct("创业板")           # 0.20
+cn_limit_pct(cn_board("600519.SH"))                 # 0.10
+cn_limit_pct(cn_board("600519.SH"), is_st = TRUE)   # 0.05
+cn_limit_pct(cn_board("300750.SZ"))                 # 0.20
 }

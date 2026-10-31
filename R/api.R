@@ -30,15 +30,15 @@ cn_api <- function(api_name, params = list(), fields = "") {
   if (!identical(as.integer(parsed$code), 0L)) {
     stop(
       sprintf(
-        "Tushare 接口 %s 返回错误（code=%s）：%s",
-        api_name, parsed$code, parsed$msg %||% "未知错误"
+        "Tushare \u63a5\u53e3 %s \u8fd4\u56de\u9519\u8bef\uff08code=%s\uff09\uff1a%s",
+        api_name, parsed$code, parsed$msg %||% "\u672a\u77e5\u9519\u8bef"
       ),
       call. = FALSE
     )
   }
   data <- parsed$data
   if (is.null(data)) {
-    stop(sprintf("Tushare 接口 %s 未返回 data 字段。", api_name), call. = FALSE)
+    stop(sprintf("Tushare \u63a5\u53e3 %s \u672a\u8fd4\u56de data \u5b57\u6bb5\u3002", api_name), call. = FALSE)
   }
   fields <- as.character(unlist(data$fields))
   items <- data$items

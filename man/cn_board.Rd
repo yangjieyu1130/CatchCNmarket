@@ -9,12 +9,14 @@ cn_board(ts_code, market = NULL)
 \arguments{
 \item{ts_code}{A `ts_code` such as `"600519.SH"`.}
 
-\item{market}{Optional board label from `stock_basic` (`"主板"`, `"创业板"`,
-`"科创板"` or `"北交所"`). When supplied it is trusted; otherwise the board
-is inferred from the numeric code prefix.}
+\item{market}{Optional board label from `stock_basic` (the Chinese label
+of the Main Board, ChiNext, STAR Market or BSE, exactly as returned by
+this function). When supplied it is trusted; otherwise the board is
+inferred from the numeric code prefix.}
 }
 \value{
-One of `"主板"`, `"创业板"`, `"科创板"`, `"北交所"`.
+The Chinese board label of the Main Board, ChiNext, STAR Market
+  or BSE (e.g. `cn_board("600519.SH")` returns the Main Board label).
 }
 \description{
 Boards differ in their daily price-limit rules, so the board must be known

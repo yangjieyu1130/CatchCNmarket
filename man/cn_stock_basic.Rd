@@ -15,9 +15,9 @@ cn_stock_basic(codes = NULL, refresh = FALSE)
 \value{
 A tibble with columns `ts_code`, `symbol`, `name`, `area`, `industry`,
   `market`, `exchange`, `list_status`, `list_date`, `delist_date`, `is_hs`.
-  `market` carries the board (主板/创业板/科创板/北交所) used by
-  [cn_board()]; `name` keeps the current trading name (an `ST`/`*ST` prefix
-  indicates a special-treatment stock).
+  `market` carries the board label (see [cn_board()]); `name` keeps the
+  current trading name (an `ST`/`*ST` prefix indicates a
+  special-treatment stock).
 }
 \description{
 Wraps Tushare `stock_basic`. Results are cached on disk, so repeated calls
