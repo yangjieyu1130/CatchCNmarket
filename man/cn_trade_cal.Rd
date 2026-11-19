@@ -21,7 +21,9 @@ A tibble with columns `exchange`, `cal_date`, `is_open` (1 open /
 Wraps Tushare `trade_cal`.
 }
 \examples{
-\dontrun{
+\donttest{
+if (interactive()) {
 cn_trade_cal("20240101", "20240131")
+}
 }
 }

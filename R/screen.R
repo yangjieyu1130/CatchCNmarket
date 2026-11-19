@@ -166,7 +166,8 @@ cn_arima_feature_row <- function(ts_code, feat_row, horizon = 3L, refresh = FALS
 #' @return A tibble, one row per surviving stock, with all feature columns
 #'   (including `score` when `run_arima = TRUE`, simple z-score weighted sum).
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' if (interactive()) {
 #' # ChiNext/STAR boards, non-ST, volume expansion, moderate 20-day gain
 #' boards20 <- vapply(c("300750.SZ", "688981.SH"), cn_board, character(1))
 #' res <- cn_screen(
@@ -191,6 +192,7 @@ cn_arima_feature_row <- function(ts_code, feat_row, horizon = 3L, refresh = FALS
 #'   ),
 #'   run_arima = TRUE
 #' )
+#' }
 #' }
 #' @export
 cn_screen <- function(universe = "all", filters = list(),
@@ -297,9 +299,11 @@ cn_screen <- function(universe = "all", filters = list(),
 #' @param ... Additional filter expressions forwarded to [cn_screen()].
 #' @return See [cn_screen()].
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' if (interactive()) {
 #' cn_screen_live(universe = c("600519.SH", "300750.SZ"))
 #' cn_screen_live(universe = "all", streak_range = 3:5)
+#' }
 #' }
 #' @export
 cn_screen_live <- function(universe = "all", streak_range = 2L:4L,

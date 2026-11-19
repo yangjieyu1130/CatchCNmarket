@@ -51,8 +51,16 @@ drivers, no regime switching. Treat it as a quick statistical baseline,
 not investment advice.
 }
 \examples{
-\dontrun{
-fc <- cn_arima("600519.SH", n_ahead = 5)
-fc <- cn_arima(cn_daily("300750.SZ", adjust = "qfq"), order = c(1, 1, 1))
+prices <- 100 + cumsum(c(
+  0.2, -0.1, 0.4, 0.1, -0.3, 0.2, 0.5, -0.2, 0.1, 0.3,
+  -0.1, 0.2, 0.4, -0.3, 0.1, 0.2, -0.2, 0.3, 0.1, -0.1
+))
+suppressWarnings(cn_arima(prices, order = c(1, 0, 0), n_ahead = 3))
+
+\donttest{
+if (interactive()) {
+cn_arima("600519.SH", n_ahead = 5)
+cn_arima(cn_daily("300750.SZ", adjust = "qfq"), order = c(1, 1, 1))
+}
 }
 }

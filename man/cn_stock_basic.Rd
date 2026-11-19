@@ -24,7 +24,9 @@ Wraps Tushare `stock_basic`. Results are cached on disk, so repeated calls
 (e.g. the daily universe) hit the cache instead of the API.
 }
 \examples{
-\dontrun{
+\donttest{
+if (interactive()) {
 basic <- cn_stock_basic(c("600519.SH", "300750.SZ"))
+}
 }
 }

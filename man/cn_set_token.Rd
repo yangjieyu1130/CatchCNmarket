@@ -22,7 +22,5 @@ The token is read from the `cnmarket.token` option first, then from the
 current session.
 }
 \examples{
-\dontrun{
 cn_set_token("your_tushare_token")
-}
 }

@@ -4,9 +4,9 @@
 [![R-CMD-check](https://github.com/yangjieyu1130/CatchCNmarket/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yangjieyu1130/CatchCNmarket/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-**A股制度感知行情工具箱**（A-Share Market Regime-Aware Market Data Toolkit）。
+**A股制度感知行情数据包**（A-Share Regime-Aware Market Data）。
 
-`CatchCNmarket` 基于 [Tushare](https://tushare.pro) API 获取 A 股行情数据，并内建了通用行情包忽略的 **A 股交易制度规则**：分板块涨跌停、ST 涨跌停、涨跌停/停牌识别、T+1 可卖日、连板统计、前/后复权，全部带本地磁盘缓存。
+`CatchCNmarket` 可通过 [Tushare](https://tushare.pro) API 或免 token 的腾讯公开接口获取 A 股日线，并内建了通用行情包忽略的 **A 股交易制度规则**：分板块涨跌停、ST 涨跌停、涨跌停/停牌识别、T+1 可卖日、连板统计、前/后复权，全部带本地磁盘缓存。
 
 ## 与现有 R 包的区分度
 
@@ -39,6 +39,12 @@ cn_set_token("你的tushare_token")
 
 # 拉行情（自动按年分片、缓存、可选复权）
 bars <- cn_daily("300750.SZ", "20240101", "20240331", adjust = "qfq")
+
+# 无 Tushare token 时，可使用腾讯公开日线接口（同样支持 none/qfq/hfq）
+bars <- cn_daily(
+  "300750.SZ", "20240101", "20240331",
+  adjust = "qfq", source = "tencent"
+)
 
 # 打制度标签：涨跌停价、是否涨跌停、停牌、连板数、T+1 可卖日
 tagged <- cn_flag(bars)

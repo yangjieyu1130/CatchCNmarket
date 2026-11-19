@@ -12,8 +12,10 @@
 #'   current trading name (an `ST`/`*ST` prefix indicates a
 #'   special-treatment stock).
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' if (interactive()) {
 #' basic <- cn_stock_basic(c("600519.SH", "300750.SZ"))
+#' }
 #' }
 #' @export
 cn_stock_basic <- function(codes = NULL, refresh = FALSE) {
@@ -42,8 +44,10 @@ cn_stock_basic <- function(codes = NULL, refresh = FALSE) {
 #' @return A tibble with columns `exchange`, `cal_date`, `is_open` (1 open /
 #'   0 closed) and `pretrade_date`.
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' if (interactive()) {
 #' cn_trade_cal("20240101", "20240131")
+#' }
 #' }
 #' @export
 cn_trade_cal <- function(start_date, end_date, exchange = "SSE", refresh = FALSE) {

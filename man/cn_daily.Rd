@@ -9,7 +9,8 @@ cn_daily(
   start_date = NULL,
   end_date = NULL,
   adjust = c("none", "qfq", "hfq"),
-  refresh = FALSE
+  refresh = FALSE,
+  source = c("tushare", "tencent")
 )
 }
 \arguments{
@@ -21,17 +22,24 @@ Defaults to the trailing 365 days ending today.}
 \item{adjust}{One of `"none"` (raw), `"qfq"` (forward) or `"hfq"` (backward).}
 
 \item{refresh}{Force a fresh API call, bypassing the cache.}
+
+\item{source}{Data provider: `"tushare"` (default; token required) or
+`"tencent"` (public endpoint; no token required).}
 }
 \value{
 A tibble with `ts_code`, `trade_date`, `open`, `high`, `low`, `close`,
   `pre_close`, `change`, `pct_chg`, `vol`, `amount`. The `adjust` mode is
-  stored in the `"adjust"` attribute.
+  stored in the `"adjust"` attribute. Tencent does not report turnover value
+  through this endpoint, so `amount` is `NA` for that source.
 }
 \description{
-Wraps Tushare `daily` (and `adj_factor` when `adjust != "none"`). Data are
-chunked by calendar year, de-duplicated, sorted, and cached. Forward/backward
-adjustment is computed locally from adjustment factors:
+Uses Tushare `daily` (and `adj_factor` when `adjust != "none"`) by default,
+or Tencent's public kline endpoint when `source = "tencent"`. The latter
+needs no API token and performs price adjustment server-side. Tushare data
+are chunked by calendar year, de-duplicated and sorted. Forward/backward
+adjustment is computed locally for Tushare:
 `qfq = price * factor / factor_latest`, `hfq = price * factor / factor_first`.
+Both sources are cached and returned with the same columns and units.
 }
 \details{
 Note that `pre_close` and the raw columns are the *unadjusted* values Tushare
@@ -39,7 +47,13 @@ returns -- the A-share price-limit base -- so [cn_flag()] can be applied to the
 raw bars regardless of `adjust`.
 }
 \examples{
-\dontrun{
+\donttest{
+if (interactive()) {
 cn_daily("600519.SH", "20240101", "20240331", adjust = "qfq")
+cn_daily(
+  "600519.SH", "20240101", "20240331",
+  adjust = "qfq", source = "tencent"
+)
+}
 }
 }

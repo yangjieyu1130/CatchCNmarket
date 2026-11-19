@@ -32,8 +32,10 @@ non-ST, ChiNext / STAR (20 percent boards), up-streak in a target band,
 no recent halts, no consecutive down-limits, and ARIMA forecast >= 0.
 }
 \examples{
-\dontrun{
+\donttest{
+if (interactive()) {
 cn_screen_live(universe = c("600519.SH", "300750.SZ"))
 cn_screen_live(universe = "all", streak_range = 3:5)
+}
 }
 }

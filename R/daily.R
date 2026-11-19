@@ -50,12 +50,104 @@ cn_adj_factor <- function(ts_code, start_date, end_date, refresh = FALSE) {
   out[order(out$trade_date), , drop = FALSE]
 }
 
+# Convert a ts_code to the symbol used by Tencent.
+cn_tencent_symbol <- function(ts_code) {
+  parts <- strsplit(ts_code, ".", fixed = TRUE)[[1]]
+  if (length(parts) != 2L || !grepl("^[0-9]{6}$", parts[1]) ||
+      !toupper(parts[2]) %in% c("SH", "SZ", "BJ")) {
+    stop("ts_code must be a six-digit code ending in SH, SZ or BJ.", call. = FALSE)
+  }
+  paste0(tolower(parts[2]), parts[1])
+}
+
+# Convert Tencent kline rows to the same columns returned for Tushare.
+cn_tencent_parse <- function(klines, ts_code, adjust = "none") {
+  rows <- lapply(klines, function(x) as.character(unlist(x)))
+  if (length(rows) == 0L) return(NULL)
+  if (any(lengths(rows) < 6L)) {
+    stop("Tencent returned an unexpected kline format.", call. = FALSE)
+  }
+  mat <- do.call(rbind, lapply(rows, function(x) x[seq_len(6L)]))
+  mat <- mat[order(mat[, 1L]), , drop = FALSE]
+  num <- function(j) as.numeric(mat[, j])
+  close <- num(3L)
+  pre_close <- c(NA_real_, close[seq_len(length(close) - 1L)])
+  change <- close - pre_close
+  out <- tibble::tibble(
+    ts_code = ts_code,
+    trade_date = gsub("-", "", mat[, 1L], fixed = TRUE),
+    open = num(2L),
+    high = num(4L),
+    low = num(5L),
+    close = close,
+    pre_close = pre_close,
+    change = change,
+    pct_chg = change / pre_close * 100,
+    vol = num(6L),
+    amount = NA_real_
+  )
+  attr(out, "adjust") <- adjust
+  out
+}
+
+# Fetch daily bars from Tencent's public, no-key kline endpoint.
+cn_daily_tencent <- function(ts_code, start_date, end_date,
+                             adjust = "none", refresh = FALSE) {
+  symbol <- cn_tencent_symbol(ts_code)
+  key <- cn_key("tencent_daily", ts_code, start_date, end_date, adjust)
+  out <- cn_with_cache(key, {
+    # Extra history supplies the previous close for the first requested row.
+    beg_date <- as.Date(start_date, "%Y%m%d") - 10
+    end_date_obj <- as.Date(end_date, "%Y%m%d")
+    count <- as.integer(end_date_obj - beg_date) + 1L
+    param_parts <- c(
+      symbol, "day", format(beg_date, "%Y-%m-%d"),
+      format(end_date_obj, "%Y-%m-%d"), as.character(count),
+      if (adjust == "none") "" else adjust
+    )
+    req <- httr2::request("https://web.ifzq.gtimg.cn/appstock/app/fqkline/get") |>
+      httr2::req_url_query(param = paste(param_parts, collapse = ",")) |>
+      httr2::req_user_agent("cnmarket (https://github.com/yangjieyu1130/CatchCNmarket)") |>
+      httr2::req_timeout(30) |>
+      httr2::req_retry(max_tries = 3, retry_on_failure = TRUE)
+    # Tencent labels this JSON response as text/html.
+    parsed <- httr2::req_perform(req) |>
+      httr2::resp_body_json(check_type = FALSE, simplifyVector = FALSE)
+    if (!identical(as.integer(parsed$code), 0L)) {
+      stop(
+        "Tencent daily request failed: ", parsed$msg %||% "unknown error",
+        call. = FALSE
+      )
+    }
+    stock <- parsed$data[[symbol]]
+    data_key <- if (adjust == "none") "day" else paste0(adjust, "day")
+    klines <- if (is.null(stock)) NULL else stock[[data_key]]
+    bars <- cn_tencent_parse(klines, ts_code, adjust)
+    if (!is.null(bars)) {
+      keep <- bars$trade_date >= start_date & bars$trade_date <= end_date
+      bars <- bars[keep, , drop = FALSE]
+      attr(bars, "adjust") <- adjust
+    }
+    bars
+  }, refresh = refresh)
+  if (is.null(out) || nrow(out) == 0L) {
+    stop(
+      sprintf("No daily data returned for %s in %s ~ %s.", ts_code, start_date, end_date),
+      call. = FALSE
+    )
+  }
+  out
+}
+
 #' Fetch daily bars with optional price adjustment
 #'
-#' Wraps Tushare `daily` (and `adj_factor` when `adjust != "none"`). Data are
-#' chunked by calendar year, de-duplicated, sorted, and cached. Forward/backward
-#' adjustment is computed locally from adjustment factors:
+#' Uses Tushare `daily` (and `adj_factor` when `adjust != "none"`) by default,
+#' or Tencent's public kline endpoint when `source = "tencent"`. The latter
+#' needs no API token and performs price adjustment server-side. Tushare data
+#' are chunked by calendar year, de-duplicated and sorted. Forward/backward
+#' adjustment is computed locally for Tushare:
 #' `qfq = price * factor / factor_latest`, `hfq = price * factor / factor_first`.
+#' Both sources are cached and returned with the same columns and units.
 #'
 #' Note that `pre_close` and the raw columns are the *unadjusted* values Tushare
 #' returns -- the A-share price-limit base -- so [cn_flag()] can be applied to the
@@ -66,17 +158,28 @@ cn_adj_factor <- function(ts_code, start_date, end_date, refresh = FALSE) {
 #'   Defaults to the trailing 365 days ending today.
 #' @param adjust One of `"none"` (raw), `"qfq"` (forward) or `"hfq"` (backward).
 #' @param refresh Force a fresh API call, bypassing the cache.
+#' @param source Data provider: `"tushare"` (default; token required) or
+#'   `"tencent"` (public endpoint; no token required).
 #' @return A tibble with `ts_code`, `trade_date`, `open`, `high`, `low`, `close`,
 #'   `pre_close`, `change`, `pct_chg`, `vol`, `amount`. The `adjust` mode is
-#'   stored in the `"adjust"` attribute.
+#'   stored in the `"adjust"` attribute. Tencent does not report turnover value
+#'   through this endpoint, so `amount` is `NA` for that source.
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' if (interactive()) {
 #' cn_daily("600519.SH", "20240101", "20240331", adjust = "qfq")
+#' cn_daily(
+#'   "600519.SH", "20240101", "20240331",
+#'   adjust = "qfq", source = "tencent"
+#' )
+#' }
 #' }
 #' @export
 cn_daily <- function(ts_code, start_date = NULL, end_date = NULL,
-                     adjust = c("none", "qfq", "hfq"), refresh = FALSE) {
+                     adjust = c("none", "qfq", "hfq"), refresh = FALSE,
+                     source = c("tushare", "tencent")) {
   adjust <- match.arg(adjust)
+  source <- match.arg(source)
   if (!is.character(ts_code) || length(ts_code) != 1L) {
     stop("ts_code \u5fc5\u987b\u662f\u5355\u4e2a\u8bc1\u5238\u4ee3\u7801\u5b57\u7b26\u4e32\u3002", call. = FALSE)
   }
@@ -87,6 +190,12 @@ cn_daily <- function(ts_code, start_date = NULL, end_date = NULL,
     start_date <- cn_ymd(start_date)
   }
   if (start_date > end_date) stop("start_date \u5fc5\u987b\u4e0d\u665a\u4e8e end_date\u3002", call. = FALSE)
+
+  if (source == "tencent") {
+    return(cn_daily_tencent(
+      ts_code, start_date, end_date, adjust = adjust, refresh = refresh
+    ))
+  }
 
   bars <- cn_daily_raw(ts_code, start_date, end_date, refresh = refresh)
   if (is.null(bars)) {

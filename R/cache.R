@@ -33,9 +33,10 @@ cn_with_cache <- function(key, expr, refresh = FALSE) {
 #'
 #' @return Invisibly, the number of files removed.
 #' @examples
-#' \dontrun{
+#' old_cache <- cn_cache_dir()
+#' cn_set_cache_dir(file.path(tempdir(), "cnmarket-cache"))
 #' cn_cache_clear()
-#' }
+#' cn_set_cache_dir(old_cache)
 #' @export
 cn_cache_clear <- function() {
   files <- list.files(cn_cache_dir(), pattern = "\\.rds$", full.names = TRUE)

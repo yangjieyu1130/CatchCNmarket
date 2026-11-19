@@ -21,7 +21,5 @@ cn_cache_dir()
 Configure the on-disk cache directory
 }
 \examples{
-\dontrun{
-cn_set_cache_dir("~/cnmarket_cache")
-}
+cn_set_cache_dir(file.path(tempdir(), "cnmarket-cache"))
 }

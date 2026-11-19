@@ -1,3 +1,18 @@
+test_that("public Tencent daily calls need no token", {
+  skip_on_cran()
+
+  bars <- cn_daily(
+    "600519.SH", "20240102", "20240110",
+    source = "tencent", refresh = TRUE
+  )
+  expect_true(nrow(bars) > 0L)
+  expect_true(all(c("open", "high", "low", "close", "pre_close") %in% names(bars)))
+  expect_s3_class(bars, "tbl_df")
+  expect_equal(bars$pre_close[1], 1726)
+  expect_true(all(is.na(bars$amount)))
+  expect_equal(attr(bars, "adjust"), "none")
+})
+
 test_that("live Tushare calls work when a token is configured", {
   skip_if(nchar(Sys.getenv("TUSHARE_TOKEN")) == 0, "no TUSHARE_TOKEN set")
 

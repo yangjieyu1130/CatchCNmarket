@@ -8,9 +8,7 @@
 #' @return `cn_set_token()` invisibly returns the token; `cn_token()` returns the
 #'   resolved token or errors if none is configured.
 #' @examples
-#' \dontrun{
 #' cn_set_token("your_tushare_token")
-#' }
 #' @export
 cn_set_token <- function(token) {
   if (!is.character(token) || length(token) != 1L || !nzchar(token)) {
@@ -44,9 +42,7 @@ cn_token <- function() {
 #'   `cn_cache_dir()` returns the active directory (defaults to
 #'   `tools::R_user_dir("cnmarket", "cache")`).
 #' @examples
-#' \dontrun{
-#' cn_set_cache_dir("~/cnmarket_cache")
-#' }
+#' cn_set_cache_dir(file.path(tempdir(), "cnmarket-cache"))
 #' @export
 cn_set_cache_dir <- function(path) {
   path <- normalizePath(path.expand(path), mustWork = FALSE)

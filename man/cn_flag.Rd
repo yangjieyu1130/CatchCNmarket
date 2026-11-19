@@ -53,8 +53,15 @@ market-data packages do not provide:
 security's current name in [cn_stock_basic()] (a name containing `"ST"`).
 }
 \examples{
-\dontrun{
-bars <- cn_daily("600519.SH", "20240101", "20240331")
-head(cn_flag(bars))
-}
+bars <- data.frame(
+  ts_code = "600519.SH",
+  trade_date = c("20240102", "20240103"),
+  pre_close = c(10, 11), close = c(11, 11),
+  high = c(11, 11.2), low = c(10, 10.8), vol = c(1000, 1200)
+)
+cal <- data.frame(
+  cal_date = c("20240102", "20240103", "20240104"),
+  is_open = c(1, 1, 1)
+)
+cn_flag(bars, is_st = FALSE, cal = cal)
 }

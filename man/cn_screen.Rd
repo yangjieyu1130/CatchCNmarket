@@ -58,7 +58,8 @@ on the survivors.
 `arima_pred_chg` (horizon-day predicted return), `arima_order`.
 }
 \examples{
-\dontrun{
+\donttest{
+if (interactive()) {
 # ChiNext/STAR boards, non-ST, volume expansion, moderate 20-day gain
 boards20 <- vapply(c("300750.SZ", "688981.SH"), cn_board, character(1))
 res <- cn_screen(
@@ -83,5 +84,6 @@ res <- cn_screen(
   ),
   run_arima = TRUE
 )
+}
 }
 }

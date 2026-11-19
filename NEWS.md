@@ -1,5 +1,10 @@
 # cnmarket 0.3.0
 
+* `cn_daily()` 新增 `source = "tencent"`，可通过腾讯公开接口获取
+  无需 token 的 A 股日线，支持 none/qfq/hfq、本地缓存和传输失败重试。
+  腾讯端点不提供成交额，因此该源的 `amount` 列为 `NA`。
+* 按 CRAN 审核意见清理 DESCRIPTION 标题与软件名称格式；联网示例改用
+  `\donttest{}`，本地可执行示例直接运行。
 * 新增选股层 `cn_screen()` / `cn_screen_live()`：制度感知的多因子选股器，
   **制度因子**（A 股独有）与**技术因子**（base-R 实现，零新增依赖）混合筛选，
   可选 ARIMA 预测二次过滤与 z-score 加权打分。

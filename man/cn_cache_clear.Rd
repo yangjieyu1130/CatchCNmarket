@@ -13,7 +13,8 @@ Invisibly, the number of files removed.
 Removes every `.rds` file under [cn_cache_dir()].
 }
 \examples{
-\dontrun{
+old_cache <- cn_cache_dir()
+cn_set_cache_dir(file.path(tempdir(), "cnmarket-cache"))
 cn_cache_clear()
-}
+cn_set_cache_dir(old_cache)
 }

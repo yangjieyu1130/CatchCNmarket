@@ -79,9 +79,17 @@ cn_future_dates <- function(last_date, n_ahead, refresh = FALSE) {
 #'   `lo`/`hi` pair per entry of `level` (e.g. `lo80`, `hi95`). Attributes:
 #'   `"order"` (fitted order), `"aic"`, `"log_price"`, `"ts_code"`.
 #' @examples
-#' \dontrun{
-#' fc <- cn_arima("600519.SH", n_ahead = 5)
-#' fc <- cn_arima(cn_daily("300750.SZ", adjust = "qfq"), order = c(1, 1, 1))
+#' prices <- 100 + cumsum(c(
+#'   0.2, -0.1, 0.4, 0.1, -0.3, 0.2, 0.5, -0.2, 0.1, 0.3,
+#'   -0.1, 0.2, 0.4, -0.3, 0.1, 0.2, -0.2, 0.3, 0.1, -0.1
+#' ))
+#' suppressWarnings(cn_arima(prices, order = c(1, 0, 0), n_ahead = 3))
+#'
+#' \donttest{
+#' if (interactive()) {
+#' cn_arima("600519.SH", n_ahead = 5)
+#' cn_arima(cn_daily("300750.SZ", adjust = "qfq"), order = c(1, 1, 1))
+#' }
 #' }
 #' @export
 cn_arima <- function(x, order = "auto", n_ahead = 5, log_price = TRUE,
